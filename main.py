@@ -52,7 +52,7 @@ for i in range(num_of_enemies):
 	alien_img.append(pygame.image.load("alien.png"))
 	alien_x.append(random.randint(0, 736))
 	alien_y.append(random.randint(50, 250))
-	alienx_change.append(0.5)
+	alienx_change.append(5)
 	alieny_change.append(30)
 
 # Bullet
@@ -60,7 +60,7 @@ bullet_img = pygame.image.load("bullet.png")
 bullet_x = 0
 bullet_y = 496
 bulletx_change = 0
-bullety_change = 2.5
+bullety_change = 20
 bullet_state = "ready"
 
 # Background
@@ -97,6 +97,7 @@ def is_collision(alienx, alieny, bulletx, bullety):
 	else:
 		return False
 
+clock = pygame.time.Clock()
 
 # Game loop
 running = True
@@ -113,9 +114,9 @@ while running:
 		# if a keystroke is pressed check whether it's right or left
 		if (event.type == pygame.KEYDOWN):
 			if (event.key == pygame.K_LEFT):
-				playerx_change = -1
+				playerx_change = -5
 			if (event.key == pygame.K_RIGHT):
-				playerx_change = 1
+				playerx_change = 5
 			#if (event.key == pygame.K_UP):
 			#	playery_change = -1
 			#if (event.key == pygame.K_DOWN):
@@ -152,10 +153,10 @@ while running:
 
 
 		if alien_x[i] <= 0:
-			alienx_change[i] = 0.5
+			alienx_change[i] = 5
 			alien_y[i] += alieny_change[i]
 		elif alien_x[i] >= 736:
-			alienx_change[i] = -0.5
+			alienx_change[i] = -5
 			alien_y[i] += alieny_change[i]
 		
 		alien_x[i] += alienx_change[i]
@@ -187,3 +188,4 @@ while running:
 		
 
 	pygame.display.update()
+	clock.tick(40)
