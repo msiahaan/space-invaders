@@ -58,8 +58,8 @@ def draw_bullet(img, x, y):
 	screen.blit(img, (x, y))
 
 
-def is_collision(alien, bullet):
-	distance = math.sqrt((math.pow(alien.x - bullet.x, 2)) + (math.pow(alien.y - bullet.y, 2)))
+def is_collision(a, b):
+	distance = math.sqrt((math.pow(a.x - b.x, 2)) + (math.pow(a.y - b.y, 2)))
 	if (distance < 27):
 		return True
 	else:
@@ -96,23 +96,30 @@ def main():
 				running = False
 			# if a keystroke is pressed check whether it's right or left
 			if (event.type == pygame.KEYDOWN):
+				if (event.key == pygame.K_ESCAPE):
+					running = False
 				if (event.key == pygame.K_LEFT):
 					player.x_change = -5
 				if (event.key == pygame.K_RIGHT):
 					player.x_change = 5
-				#if (event.key == pygame.K_UP):
-				#	playery_change = -1
-				#if (event.key == pygame.K_DOWN):
-				#	playery_change = -1
+				if (event.key == pygame.K_UP):
+					player.y_change = -5
+				if (event.key == pygame.K_DOWN):
+					player.y_change = 5
 				if (event.key == pygame.K_SPACE):
 					if bullet.state == "ready":
 						bullet_sound.play()
 						bullet.x = player.x + 16
+						bullet.y = player.y - 32
 						draw_bullet(bullet.img, bullet.x, bullet.y)
 						bullet.state = "fire"
 			if event.type == pygame.KEYUP:
-				if ((event.key == pygame.K_LEFT) or (event.key == pygame.K_RIGHT)):
+				if ((event.key == pygame.K_LEFT) or 
+					(event.key == pygame.K_RIGHT)):
 					player.x_change = 0
+				if ((event.key == pygame.K_UP) or
+					(event.key == pygame.K_DOWN)):
+					player.y_change = 0
 				if (event.key == pygame.K_SPACE):
 					pass
 					
@@ -122,13 +129,19 @@ def main():
 		if player.x >= 736:
 			player.x = 736
 
+		if player.y <= 0:
+			player.y = 0
+		if player.y >= 536:
+			player.y = 536
+
 		player.x += player.x_change
+		player.y += player.y_change
 		
 		# Alien movement
 		for i in range(num_of_enemies):
 			enemy = enemies[i]
 			# Game over
-			if enemy.y > 300:
+			if (enemy.y > 370):
 				player.y = 2000
 				bullet.state = "off"
 				game_over()
@@ -143,17 +156,20 @@ def main():
 			
 			enemy.x += enemy.x_change
 
-			# Collision
-			collision = is_collision(enemy, bullet)
-			if collision:
+			# Enemy hit by bullet
+			hit = is_collision(enemy, bullet)
+			crashed = is_collision(enemy, player)
+			if hit:
 				collision_sound.play()
 				bullet.y = 496
 				bullet.state = "ready"
 				score_value += 1
 				enemy.x = random.randint(0, 736)
 				enemy.y = random.randint(50, 250)
+			elif crashed:
+				player.x = 370
+				player.y = 480
 			
-
 			draw_alien(enemy.img, enemy.x, enemy.y)
 
 		# Bullet movement
