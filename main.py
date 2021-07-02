@@ -4,6 +4,9 @@ from pygame import mixer
 import random
 import math
 
+FPS = 60
+WIDTH = 800
+HEIGHT = 600
 
 # Player
 
@@ -14,6 +17,7 @@ class Player(object):
 		self.y = 480
 		self.x_change = 0
 		self.y_change = 0
+		self.lives = 3
 
 # Enemy
 class Alien(object):
@@ -40,6 +44,9 @@ def show_score(x, y, score_value):
 	score = font.render("Score : " + str(score_value), True, (255, 255, 255))
 	screen.blit(score, (x, y))
 
+def show_lives(x, y, lives_value):
+	live = lives_font.render("Lives : " + str(lives_value), True, (255, 255, 255))
+	screen.blit(live, (x, y))
 
 def game_over():
 	text = over_font.render("GAME OVER", True, (255, 255, 255))
@@ -73,6 +80,8 @@ def main():
 	bullet = Bullet()
 
 	enemies = []
+    
+	num_of_enemies = 10
 
 	clock = pygame.time.Clock()
 
@@ -89,7 +98,6 @@ def main():
 		# RGB: Red, Green, Blue
 		screen.fill((0, 0, 0))
 		screen.blit(background, (0, 0))
-
 
 		for event in pygame.event.get():
 			if (event.type == pygame.QUIT):
@@ -123,6 +131,13 @@ def main():
 				if (event.key == pygame.K_SPACE):
 					pass
 					
+		if (player.lives == 0):
+			bullet.state = "off"
+			player.y = 2000
+			for enemy in enemies:
+				enemy.y = 2000
+			game_over()
+
 	   	# Player movement
 		if player.x <= 0:
 			player.x = 0
@@ -138,12 +153,12 @@ def main():
 		player.y += player.y_change
 		
 		# Alien movement
-		for i in range(num_of_enemies):
-			enemy = enemies[i]
+		for enemy in enemies:
 			# Game over
 			if (enemy.y > 370):
 				player.y = 2000
 				bullet.state = "off"
+				for enemy in enemies: enemy.y = 2000
 				game_over()
 				break
 
@@ -166,9 +181,12 @@ def main():
 				score_value += 1
 				enemy.x = random.randint(0, 736)
 				enemy.y = random.randint(50, 250)
+				enemy.x_change = enemy.x_change * 1.5
+				enemy.y_change = enemy.y_change * 1.5
 			elif crashed:
 				player.x = 370
 				player.y = 480
+				player.lives -= 1
 			
 			draw_alien(enemy.img, enemy.x, enemy.y)
 
@@ -181,11 +199,12 @@ def main():
 			draw_bullet(bullet.img, bullet.x, bullet.y)
 
 		draw_player(player.img, player.x, player.y)
-		show_score(textx, texty, score_value)
+		show_score(10, 10, score_value)
+		show_lives(700, 10, player.lives)
 			
 
 		pygame.display.update()
-		clock.tick(40)
+		clock.tick(FPS)
 
 
 if __name__ == "__main__":
@@ -193,21 +212,16 @@ if __name__ == "__main__":
 	pygame.init()
 	
 	# Create the screen
-	screen = pygame.display.set_mode((800, 600))
-	
-	# Title and icon
+	screen = pygame.display.set_mode((WIDTH, HEIGHT))
 	pygame.display.set_caption("Space Invaders")
 	icon = pygame.image.load("ufo.png")
 	pygame.display.set_icon(icon)
 
 	# Score Text
 	font = pygame.font.Font('freesansbold.ttf', 32)
-	textx = 10
-	texty = 10
 
-	# number of enemies
-	num_of_enemies = 6
-
+	lives_font = pygame.font.Font('freesansbold.ttf', 16)
+	
 	# Background
 	background = pygame.image.load("background.png")
 
