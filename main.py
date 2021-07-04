@@ -73,24 +73,9 @@ def is_collision(a, b):
 		return False
 
 
-def main():
+def main_loop():
 
 	score_value = 0
-	player = Player()
-	bullet = Bullet()
-
-	enemies = []
-    
-	num_of_enemies = 10
-
-	clock = pygame.time.Clock()
-
-	for i in range(num_of_enemies):
-		enemy = Alien()
-		enemy.x = random.randint(0, 735)
-		enemy.y = random.randint(50, 250)
-		enemies.append(enemy)
-	
 	# Game loop
 	running = True
 	while running:
@@ -181,8 +166,6 @@ def main():
 				score_value += 1
 				enemy.x = random.randint(0, 736)
 				enemy.y = random.randint(50, 250)
-				enemy.x_change = enemy.x_change * 1.5
-				enemy.y_change = enemy.y_change * 1.5
 			elif crashed:
 				player.x = 370
 				player.y = 480
@@ -237,6 +220,21 @@ if __name__ == "__main__":
 
 	# Game Over Text
 	over_font = pygame.font.Font('freesansbold.ttf', 64)
-	main()
 
+	player = Player()
+	bullet = Bullet()
+
+	enemies = []
+
+	clock = pygame.time.Clock()
+
+	num_of_enemies = 6
+
+	for i in range(num_of_enemies):
+		enemy = Alien()
+		enemy.x = random.randint(0, 735)
+		enemy.y = random.randint(50, 250)
+		enemies.append(enemy)
+	
+	main_loop()
 	
